@@ -38,23 +38,32 @@ class RobingoodApp {
                 if (videoFiles && videoFiles.length > 0) {
                     this.showAddCourseDialog(folderPath, videoFiles);
                 } else {
-                    this.showNotification('No video files found in selected folder', 'warning');
+                    this.showNotification('Nenhum arquivo de vídeo encontrado na pasta selecionada', 'warning');
                 }
             }
         } catch (error) {
             console.error('Error selecting folder:', error);
-            this.showNotification('Error selecting folder', 'error');
+            this.showNotification('Erro ao selecionar pasta', 'error');
         }
     }
 
     showAddCourseDialog(folderPath, videoFiles) {
+        // Sort video files by name
+        const sortedFiles = videoFiles.sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Store the data temporarily in the app instance
+        this.tempCourseData = {
+            folderPath: folderPath,
+            videoFiles: sortedFiles
+        };
+        
         // Create modal dialog for course naming
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>Add New Course</h3>
+                    <h3>Adicionar Novo Curso</h3>
                     <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -63,47 +72,89 @@ class RobingoodApp {
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="course-name">Course Name</label>
-                        <input type="text" id="course-name" placeholder="Enter course name" value="${this.getFolderName(folderPath)}">
+                        <label for="course-name">Nome do Curso</label>
+                        <input type="text" id="course-name" placeholder="Digite o nome do curso" value="${this.getFolderName(folderPath)}">
                     </div>
+                    
                     <div class="form-group">
-                        <label>Found ${videoFiles.length} video file(s)</label>
+                        <label for="course-description">Descrição (opcional)</label>
+                        <textarea id="course-description" placeholder="Adicione uma descrição para o curso" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Pasta selecionada:</label>
+                        <div class="folder-path">${folderPath}</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Encontrados ${sortedFiles.length} arquivo(s) de vídeo:</label>
                         <div class="file-list">
-                            ${videoFiles.slice(0, 5).map(file => `<div class="file-item">${file.name}</div>`).join('')}
-                            ${videoFiles.length > 5 ? `<div class="file-item-more">... and ${videoFiles.length - 5} more</div>` : ''}
+                            ${sortedFiles.slice(0, 8).map((file, index) => `
+                                <div class="file-item">
+                                    <span class="file-name">${index + 1} - ${file.name}</span>
+                                    <span class="file-size">(${this.formatFileSize(file.size || 0)})</span>
+                                </div>
+                            `).join('')}
+                            ${sortedFiles.length > 8 ? `
+                                <div class="file-item-more">
+                                    <span>... e mais ${sortedFiles.length - 8} arquivo(s)</span>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-                    <button class="btn-primary" onclick="app.confirmAddCourse('${folderPath}', '${JSON.stringify(videoFiles).replace(/'/g, "\\'")}', this.closest('.modal-overlay'))">Add Course</button>
+                    <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
+                    <button class="btn-primary" id="confirm-add-course">Adicionar Curso</button>
                 </div>
             </div>
         `;
         
         document.body.appendChild(modal);
         
-        // Focus on input
+        // Add event listeners
+        const confirmButton = modal.querySelector('#confirm-add-course');
+        confirmButton.addEventListener('click', () => {
+            this.confirmAddCourse(modal);
+        });
+        
+        // Focus on input and add Enter key handler
         setTimeout(() => {
             const input = modal.querySelector('#course-name');
             input.focus();
             input.select();
+            
+            // Add Enter key handler
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    confirmButton.click();
+                }
+            });
         }, 100);
     }
 
-    confirmAddCourse(folderPath, videoFilesJson, modal) {
+    confirmAddCourse(modal) {
         const courseName = modal.querySelector('#course-name').value.trim();
+        const courseDescription = modal.querySelector('#course-description').value.trim();
         
         if (!courseName) {
-            this.showNotification('Please enter a course name', 'warning');
+            this.showNotification('Por favor, digite um nome para o curso', 'warning');
             return;
         }
 
-        const videoFiles = JSON.parse(videoFilesJson);
+        // Check if course name already exists
+        if (this.courses.some(course => course.name.toLowerCase() === courseName.toLowerCase())) {
+            this.showNotification('Já existe um curso com este nome', 'warning');
+            return;
+        }
+
+        // Get the temporary data
+        const { folderPath, videoFiles } = this.tempCourseData;
         
         const course = {
             id: Date.now().toString(),
             name: courseName,
+            description: courseDescription,
             path: folderPath,
             videos: videoFiles.map((file, index) => ({
                 id: `${Date.now()}_${index}`,
@@ -111,10 +162,13 @@ class RobingoodApp {
                 path: file.path,
                 watched: false,
                 currentTime: 0,
-                duration: 0
+                duration: 0,
+                order: index + 1
             })),
             createdAt: new Date().toISOString(),
-            progress: 0
+            lastAccessed: new Date().toISOString(),
+            progress: 0,
+            totalDuration: 0
         };
 
         this.courses.push(course);
@@ -122,11 +176,27 @@ class RobingoodApp {
         this.updateUI();
         modal.remove();
         
-        this.showNotification(`Course "${courseName}" added successfully!`, 'success');
+        // Clean up temporary data
+        delete this.tempCourseData;
+        
+        this.showNotification(`Curso "${courseName}" adicionado com sucesso!`, 'success');
+        
+        // Update the global courses variable for other scripts
+        if (window.courses !== undefined) {
+            window.courses = this.courses;
+        }
     }
 
     getFolderName(folderPath) {
-        return folderPath.split(/[\\/]/).pop() || 'New Course';
+        return folderPath.split(/[\\/]/).pop() || 'Novo Curso';
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
     filterCourses(query) {
@@ -146,12 +216,24 @@ class RobingoodApp {
             const courseName = card.querySelector('.course-card-title')?.textContent.toLowerCase() || '';
             card.style.display = courseName.includes(searchQuery) ? 'flex' : 'none';
         });
+        
+        // Show/hide empty state
+        const visibleCards = Array.from(courseCards).filter(card => card.style.display !== 'none');
+        const emptyState = document.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.style.display = visibleCards.length === 0 && this.courses.length > 0 ? 'flex' : 'none';
+        }
     }
 
     loadCourses() {
         try {
             const saved = localStorage.getItem('robingood-courses');
             this.courses = saved ? JSON.parse(saved) : [];
+            
+            // Update global variable
+            if (window.courses !== undefined) {
+                window.courses = this.courses;
+            }
         } catch (error) {
             console.error('Error loading courses:', error);
             this.courses = [];
@@ -176,12 +258,12 @@ class RobingoodApp {
         if (!coursesList) return;
 
         if (this.courses.length === 0) {
-            coursesList.innerHTML = '<div class="no-courses">No courses added yet</div>';
+            coursesList.innerHTML = '<div class="no-courses">Nenhum curso adicionado ainda</div>';
             return;
         }
 
         coursesList.innerHTML = this.courses.map(course => `
-            <div class="course-item" data-course-id="${course.id}">
+            <div class="course-item" data-course-id="${course.id}" onclick="app.openCourse('${course.id}')">
                 <div class="course-icon">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
@@ -189,7 +271,7 @@ class RobingoodApp {
                 </div>
                 <div class="course-info">
                     <div class="course-name">${course.name}</div>
-                    <div class="course-progress">${course.videos.length} videos • ${Math.round(course.progress)}% complete</div>
+                    <div class="course-progress">${course.videos.length} vídeos • ${Math.round(course.progress)}% concluído</div>
                 </div>
             </div>
         `).join('');
@@ -205,15 +287,15 @@ class RobingoodApp {
                     <svg class="empty-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                     </svg>
-                    <h3>No courses yet</h3>
-                    <p>Start by adding your first course</p>
+                    <h3>Nenhum curso ainda</h3>
+                    <p>Comece adicionando seu primeiro curso</p>
                 </div>
             `;
             return;
         }
 
         coursesGrid.innerHTML = this.courses.map(course => `
-            <div class="course-card" data-course-id="${course.id}">
+            <div class="course-card" data-course-id="${course.id}" onclick="app.openCourse('${course.id}')">
                 <div class="course-card-header">
                     <div class="course-card-icon">
                         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -222,13 +304,13 @@ class RobingoodApp {
                     </div>
                     <div class="course-card-info">
                         <div class="course-card-title">${course.name}</div>
-                        <div class="course-card-subtitle">${course.videos.length} videos</div>
+                        <div class="course-card-subtitle">${course.videos.length} vídeos</div>
                     </div>
                 </div>
                 <div class="course-card-body">
                     <div class="course-stats">
-                        <span>${course.videos.filter(v => v.watched).length}/${course.videos.length} watched</span>
-                        <span>Added ${new Date(course.createdAt).toLocaleDateString()}</span>
+                        <span>${course.videos.filter(v => v.watched).length}/${course.videos.length} assistidos</span>
+                        <span>Adicionado em ${new Date(course.createdAt).toLocaleDateString('pt-BR')}</span>
                     </div>
                     <div class="course-progress-bar">
                         <div class="course-progress-fill" style="width: ${course.progress}%"></div>
@@ -236,6 +318,472 @@ class RobingoodApp {
                 </div>
             </div>
         `).join('');
+    }
+
+    openCourse(courseId) {
+        // Update last accessed time
+        const course = this.courses.find(c => c.id === courseId);
+        if (!course) {
+            this.showNotification('Curso não encontrado', 'error');
+            return;
+        }
+        
+        course.lastAccessed = new Date().toISOString();
+        this.saveCourses();
+        
+        // Show course details
+        this.showCourseDetails(course);
+    }
+
+    showCourseDetails(course) {
+        const contentArea = document.getElementById('content-area');
+        if (!contentArea) return;
+
+        // Hide all sections first
+        const sections = contentArea.querySelectorAll('section');
+        sections.forEach(section => section.style.display = 'none');
+
+        // Update page title
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) {
+            pageTitle.textContent = course.name;
+        }
+
+        // Create or update course details section
+        let courseSection = document.getElementById('course-details-section');
+        if (!courseSection) {
+            courseSection = document.createElement('section');
+            courseSection.id = 'course-details-section';
+            contentArea.appendChild(courseSection);
+        }
+
+        // Load progress for all videos
+        course.videos.forEach(video => {
+            this.loadVideoProgress(video);
+        });
+
+        courseSection.style.display = 'block';
+        courseSection.innerHTML = `
+            <div class="course-details-container">
+                <div class="course-header">
+                    <button class="back-button" onclick="app.showLibrary()">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+                        </svg>
+                        Voltar à Biblioteca
+                    </button>
+                    <div class="course-info-header">
+                        <h1>${course.name}</h1>
+                        ${course.description ? `<p class="course-description">${course.description}</p>` : ''}
+                        <div class="course-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">${course.videos.length}</span>
+                                <span class="stat-label">vídeos</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">${course.videos.filter(v => v.watched).length}</span>
+                                <span class="stat-label">assistidos</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">${Math.round(course.progress || 0)}%</span>
+                                <span class="stat-label">concluído</span>
+                            </div>
+                        </div>
+                        <div class="course-progress-bar">
+                            <div class="progress-fill" style="width: ${course.progress || 0}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="videos-section">
+                    <div class="section-header">
+                    <h2>Vídeos do Curso</h2>
+                        <div class="view-controls">
+                            <button class="view-toggle active" data-view="grid">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3"/>
+                                </svg>
+                            </button>
+                            <button class="view-toggle" data-view="list">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="videos-grid" id="videos-container">
+                        ${course.videos.map((video, index) => `
+                            <div class="video-card ${this.getVideoStatusClass(video)}" onclick="app.playVideo('${course.id}', '${video.id}')">
+                                <div class="video-thumbnail">
+                                    <div class="thumbnail-placeholder">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                                        </svg>
+                                    </div>
+                                    
+                                    ${video.watched ? `
+                                        <div class="completion-overlay">
+                                            <div class="completion-badge">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    ` : video.currentTime > 0 ? `
+                                        <div class="progress-overlay">
+                                            <div class="progress-bar-small">
+                                                <div class="progress-fill-small" style="width: ${(video.currentTime / (video.duration || 1)) * 100}%"></div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    
+                                <div class="video-number">${index + 1}</div>
+                                    
+                                    <div class="play-overlay">
+                                        <button class="play-btn-large">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="video-info">
+                                    <h3 class="video-title">${video.name}</h3>
+                                    <div class="video-meta">
+                                        <span class="video-duration">${this.formatTime(video.duration || 0)}</span>
+                                        <div class="video-status">
+                                            ${this.getVideoStatusBadge(video)}
+                                        </div>
+                                    </div>
+                                    ${video.currentTime > 0 && !video.watched ? `
+                                        <div class="video-progress-info">
+                                            <span>Assistido: ${this.formatTime(video.currentTime)} / ${this.formatTime(video.duration || 0)}</span>
+                                </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Setup view toggle functionality
+        this.setupViewToggle();
+    }
+
+    getVideoStatusClass(video) {
+        if (video.watched) return 'watched';
+        if (video.currentTime > 0) return 'in-progress';
+        return 'unwatched';
+    }
+
+    getVideoStatusBadge(video) {
+        if (video.watched) {
+            return '<span class="status-badge watched">✓ Assistido</span>';
+        } else if (video.currentTime > 0) {
+            const progress = Math.round((video.currentTime / (video.duration || 1)) * 100);
+            return `<span class="status-badge in-progress">${progress}% assistido</span>`;
+        } else {
+            return '<span class="status-badge unwatched">Não assistido</span>';
+        }
+    }
+
+    setupViewToggle() {
+        const viewToggles = document.querySelectorAll('.view-toggle');
+        const videosContainer = document.getElementById('videos-container');
+        
+        viewToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const view = toggle.dataset.view;
+                
+                // Update active state
+                viewToggles.forEach(t => t.classList.remove('active'));
+                toggle.classList.add('active');
+                
+                // Update container class
+                videosContainer.className = view === 'list' ? 'videos-list' : 'videos-grid';
+            });
+        });
+    }
+
+    showLibrary() {
+        // Hide course details section
+        const courseSection = document.getElementById('course-details-section');
+        if (courseSection) {
+            courseSection.style.display = 'none';
+        }
+
+        // Show home section
+        const homeSection = document.getElementById('home-section');
+        if (homeSection) {
+            homeSection.style.display = 'block';
+        }
+
+        // Update page title
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) {
+            pageTitle.textContent = 'My Library';
+        }
+    }
+
+    playVideo(courseId, videoId) {
+        const course = this.courses.find(c => c.id === courseId);
+        const video = course?.videos.find(v => v.id === videoId);
+        
+        if (!course || !video) {
+            this.showNotification('Vídeo não encontrado', 'error');
+            return;
+        }
+
+        // Create video player overlay
+        this.showVideoPlayer(course, video);
+    }
+
+    showVideoPlayer(course, video) {
+        // Create video player modal
+        const playerModal = document.createElement('div');
+        playerModal.className = 'video-player-modal';
+        playerModal.innerHTML = `
+            <div class="video-player-container">
+                <div class="video-player-header">
+                    <button class="close-player" onclick="this.closest('.video-player-modal').remove()">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                    <div class="video-info">
+                        <h3>${video.name}</h3>
+                        <p>${course.name}</p>
+                    </div>
+                </div>
+                
+                <div class="video-wrapper">
+                    <video 
+                        id="main-video-player" 
+                        controls 
+                        controlsList="nodownload"
+                        preload="metadata"
+                        src="file://${video.path}"
+                        onloadedmetadata="app.onVideoLoadedMetadata(event)"
+                        ontimeupdate="app.onVideoTimeUpdate(event)"
+                        onended="app.onVideoEnded(event)"
+                        onpause="app.onVideoPause(event)"
+                        onplay="app.onVideoPlay(event)"
+                    >
+                        Seu navegador não suporta o elemento de vídeo.
+                    </video>
+                    
+                    <div class="video-navigation">
+                        <button class="nav-btn prev-video" onclick="app.playPreviousVideo('${course.id}', '${video.id}')" title="Vídeo Anterior" ${course.videos.findIndex(v => v.id === video.id) === 0 ? 'disabled' : ''}>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="nav-btn next-video" onclick="app.playNextVideo('${course.id}', '${video.id}')" title="Próximo Vídeo" ${course.videos.findIndex(v => v.id === video.id) === course.videos.length - 1 ? 'disabled' : ''}>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,18H18V6H16M6,18L14.5,12L6,6V18Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="video-playlist">
+                    <h4>Playlist do Curso</h4>
+                    <div class="playlist-videos">
+                        ${course.videos.map((v, index) => `
+                            <div class="playlist-item ${v.id === video.id ? 'current' : ''} ${v.watched ? 'watched' : ''}" 
+                                 onclick="app.playVideoFromPlaylist('${course.id}', '${v.id}')">
+                                <div class="playlist-number">${index + 1}</div>
+                                <div class="playlist-info">
+                                    <span class="playlist-title">${v.name}</span>
+                                    <div class="playlist-progress">
+                                        ${v.watched ? '<span class="watched-indicator">✓ Assistido</span>' : 
+                                          v.currentTime > 0 ? `<span class="progress-indicator">${this.formatTime(v.currentTime)} / ${this.formatTime(v.duration || 0)}</span>` : 
+                                          '<span class="unwatched-indicator">Não assistido</span>'}
+                                    </div>
+                                </div>
+                                <div class="playlist-thumbnail">
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(playerModal);
+        
+        // Set up video player
+        const videoElement = document.getElementById('main-video-player');
+        this.currentVideo = { course, video, element: videoElement };
+        
+        // Load saved progress
+        this.loadVideoProgress(video);
+        
+        // Handle ESC key to close player
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                playerModal.remove();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
+
+    onVideoLoadedMetadata(event) {
+        const video = event.target;
+        const duration = video.duration;
+        
+        if (this.currentVideo) {
+            this.currentVideo.video.duration = duration;
+            
+            // Set saved current time
+            if (this.currentVideo.video.currentTime > 0) {
+                video.currentTime = this.currentVideo.video.currentTime;
+            }
+        }
+    }
+
+    onVideoTimeUpdate(event) {
+        const video = event.target;
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+        
+        if (this.currentVideo) {
+            this.currentVideo.video.currentTime = currentTime;
+            
+            // Save progress every 5 seconds
+            if (Math.floor(currentTime) % 5 === 0) {
+                this.saveVideoProgress(this.currentVideo.video);
+            }
+            
+            // Mark as watched if video is 90% complete
+            if (currentTime / duration >= 0.9 && !this.currentVideo.video.watched) {
+                this.markVideoAsWatched(this.currentVideo.course.id, this.currentVideo.video.id);
+            }
+        }
+    }
+
+    onVideoEnded(event) {
+        if (this.currentVideo) {
+            this.markVideoAsWatched(this.currentVideo.course.id, this.currentVideo.video.id);
+            this.showNotification('Vídeo concluído!', 'success');
+            
+            // Auto-play next video
+            setTimeout(() => {
+                this.playNextVideo(this.currentVideo.course.id, this.currentVideo.video.id);
+            }, 2000);
+        }
+    }
+
+    onVideoPause(event) {
+        if (this.currentVideo) {
+            this.saveVideoProgress(this.currentVideo.video);
+        }
+    }
+
+    onVideoPlay(event) {
+        // Video started playing
+    }
+
+    playPreviousVideo(courseId, currentVideoId) {
+        const course = this.courses.find(c => c.id === courseId);
+        if (!course) return;
+        
+        const currentIndex = course.videos.findIndex(v => v.id === currentVideoId);
+        if (currentIndex > 0) {
+            const previousVideo = course.videos[currentIndex - 1];
+            this.playVideoFromPlaylist(courseId, previousVideo.id);
+        }
+    }
+
+    playNextVideo(courseId, currentVideoId) {
+        const course = this.courses.find(c => c.id === courseId);
+        if (!course) return;
+        
+        const currentIndex = course.videos.findIndex(v => v.id === currentVideoId);
+        if (currentIndex < course.videos.length - 1) {
+            const nextVideo = course.videos[currentIndex + 1];
+            this.playVideoFromPlaylist(courseId, nextVideo.id);
+        } else {
+            this.showNotification('Você chegou ao final do curso!', 'info');
+        }
+    }
+
+    playVideoFromPlaylist(courseId, videoId) {
+        // Close current player
+        const currentPlayer = document.querySelector('.video-player-modal');
+        if (currentPlayer) {
+            currentPlayer.remove();
+        }
+        
+        // Play new video
+        this.playVideo(courseId, videoId);
+    }
+
+    markVideoAsWatched(courseId, videoId) {
+        const course = this.courses.find(c => c.id === courseId);
+        const video = course?.videos.find(v => v.id === videoId);
+        
+        if (course && video && !video.watched) {
+            video.watched = true;
+            video.currentTime = video.duration || 0;
+            
+            // Update course progress
+            this.updateCourseProgress(course);
+            
+            // Save changes
+            this.saveCourses();
+            
+            // Update UI if we're in course details
+            if (document.getElementById('course-details-section')?.style.display !== 'none') {
+                this.showCourseDetails(course);
+            }
+            
+            // Update sidebar
+            this.updateSidebarCourses();
+        }
+    }
+
+    updateCourseProgress(course) {
+        const watchedVideos = course.videos.filter(v => v.watched).length;
+        course.progress = (watchedVideos / course.videos.length) * 100;
+    }
+
+    saveVideoProgress(video) {
+        // Save to localStorage
+        const progressKey = `video_progress_${video.id}`;
+        const progressData = {
+            currentTime: video.currentTime,
+            duration: video.duration,
+            lastWatched: new Date().toISOString()
+        };
+        localStorage.setItem(progressKey, JSON.stringify(progressData));
+    }
+
+    loadVideoProgress(video) {
+        const progressKey = `video_progress_${video.id}`;
+        const savedProgress = localStorage.getItem(progressKey);
+        
+        if (savedProgress) {
+            const progressData = JSON.parse(savedProgress);
+            video.currentTime = progressData.currentTime || 0;
+            if (progressData.duration) {
+                video.duration = progressData.duration;
+            }
+        }
+    }
+
+    formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return '0:00';
+        
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
     showNotification(message, type = 'info') {
@@ -266,9 +814,12 @@ class RobingoodApp {
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new RobingoodApp();
+    
+    // Make courses available globally
+    window.courses = window.app.courses;
 });
 
-// Expose API for Electron
+// Expose API for Electron (fallback if preload doesn't work)
 if (typeof require !== 'undefined') {
     const { ipcRenderer } = require('electron');
     

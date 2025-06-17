@@ -10,26 +10,42 @@
   --bg-hover: #404040;        /* zinc-700 hover */
   --bg-active: #525252;       /* zinc-600 active */
   
+  /* New Component Specific Variables */
+  --surface-color: #27272a;    /* zinc-800 */
+  --surface-secondary: #3f3f46; /* zinc-700 */
+  --header-bg: #18181b;        /* zinc-900 */
+  --hover-bg: #404040;         /* zinc-700 hover */
+  
   /* Text Colors */
   --text-primary: #fafafa;    /* zinc-50 */
   --text-secondary: #e4e4e7;  /* zinc-200 */
   --text-tertiary: #a1a1aa;   /* zinc-400 */
   --text-muted: #71717a;      /* zinc-500 */
+  --text-color: #fafafa;      /* zinc-50 */
   
   /* Border Colors */
   --border-primary: #3f3f46;  /* zinc-700 */
   --border-secondary: #52525b; /* zinc-600 */
   --border-hover: #71717a;    /* zinc-500 */
+  --border-color: #3f3f46;    /* zinc-700 */
   
   /* Accent Colors */
   --accent-primary: #3b82f6;  /* blue-500 */
   --accent-hover: #2563eb;    /* blue-600 */
   --accent-light: #1e40af;    /* blue-700 */
+  --primary-color: #3b82f6;   /* blue-500 */
+  --primary-color-alpha: rgba(59, 130, 246, 0.1); /* blue-500 with alpha */
+  --primary-color-rgb: 59, 130, 246; /* blue-500 RGB values */
   
   /* Status Colors */
   --success: #10b981;         /* emerald-500 */
   --warning: #f59e0b;         /* amber-500 */
   --error: #ef4444;           /* red-500 */
+  --success-color: #10b981;   /* emerald-500 */
+  --success-color-rgb: 16, 185, 129; /* emerald-500 RGB values */
+  --warning-color: #f59e0b;   /* amber-500 */
+  --warning-color-rgb: 245, 158, 11; /* amber-500 RGB values */
+  --error-color: #ef4444;     /* red-500 */
   
   /* Shadow */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -52,26 +68,42 @@
   --bg-hover: #f1f5f9;        /* slate-100 hover */
   --bg-active: #e2e8f0;       /* slate-200 active */
   
+  /* New Component Specific Variables */
+  --surface-color: #ffffff;    /* white */
+  --surface-secondary: #f4f4f5; /* zinc-100 */
+  --header-bg: #f8fafc;        /* slate-50 */
+  --hover-bg: #f1f5f9;         /* slate-100 hover */
+  
   /* Text Colors */
   --text-primary: #18181b;    /* zinc-900 */
   --text-secondary: #27272a;  /* zinc-800 */
   --text-tertiary: #52525b;   /* zinc-600 */
   --text-muted: #71717a;      /* zinc-500 */
+  --text-color: #18181b;      /* zinc-900 */
   
   /* Border Colors */
   --border-primary: #e4e4e7;  /* zinc-200 */
   --border-secondary: #d4d4d8; /* zinc-300 */
   --border-hover: #a1a1aa;    /* zinc-400 */
+  --border-color: #e4e4e7;    /* zinc-200 */
   
   /* Accent Colors */
   --accent-primary: #3b82f6;  /* blue-500 */
   --accent-hover: #2563eb;    /* blue-600 */
   --accent-light: #1d4ed8;    /* blue-700 */
+  --primary-color: #3b82f6;   /* blue-500 */
+  --primary-color-alpha: rgba(59, 130, 246, 0.1); /* blue-500 with alpha */
+  --primary-color-rgb: 59, 130, 246; /* blue-500 RGB values */
   
   /* Status Colors */
   --success: #059669;         /* emerald-600 */
   --warning: #d97706;         /* amber-600 */
   --error: #dc2626;           /* red-600 */
+  --success-color: #059669;   /* emerald-600 */
+  --success-color-rgb: 5, 150, 105; /* emerald-600 RGB values */
+  --warning-color: #d97706;   /* amber-600 */
+  --warning-color-rgb: 217, 119, 6; /* amber-600 RGB values */
+  --error-color: #dc2626;     /* red-600 */
   
   /* Shadow */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);

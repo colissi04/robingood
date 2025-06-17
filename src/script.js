@@ -1,3 +1,17 @@
+// Global variables
+let courses = [];
+let currentTheme = localStorage.getItem('robingood-theme') || 'dark';
+
+// Initialize theme
+document.documentElement.setAttribute('data-theme', currentTheme);
+
+// Theme toggle functionality
+function changeTheme(theme) {
+    currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('robingood-theme', theme);
+}
+
 function showHome() {
     const content = document.getElementById('main-content');
     content.innerHTML = `
@@ -124,7 +138,7 @@ function getTotalVideos() {
 
 function getCompletedVideos() {
     return courses.reduce((total, course) => {
-        return total + course.videos.filter(video => video.completed).length;
+        return total + course.videos.filter(video => video.watched).length;
     }, 0);
 }
 
@@ -139,6 +153,30 @@ function clearAllData() {
         localStorage.clear();
         courses = [];
         showNotification('Todos os dados foram removidos', 'success');
-        renderCourses();
+        if (window.app) {
+            window.app.loadCourses();
+            window.app.updateUI();
+        }
     }
-} 
+}
+
+function openCourse(courseId) {
+    // TODO: Implementar na Fase 2 - Reprodutor de vídeo
+    console.log('Opening course:', courseId);
+}
+
+function showNotification(message, type = 'info') {
+    if (window.app) {
+        window.app.showNotification(message, type);
+    }
+}
+
+// Load courses from app instance when available
+function loadCoursesFromApp() {
+    if (window.app && window.app.courses) {
+        courses = window.app.courses;
+    }
+}
+
+// Update courses periodically
+setInterval(loadCoursesFromApp, 1000); 

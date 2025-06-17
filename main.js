@@ -63,21 +63,51 @@ ipcMain.handle('select-folder', async () => {
 
 ipcMain.handle('get-video-files', async (event, folderPath) => {
   const fs = require('fs');
-  const videoExtensions = ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm'];
+  const videoExtensions = ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.3gp', '.ogv'];
   
   try {
     const files = fs.readdirSync(folderPath);
-    const videoFiles = files.filter(file => {
-      const ext = path.extname(file).toLowerCase();
-      return videoExtensions.includes(ext);
-    });
+    const videoFiles = [];
     
-    return videoFiles.map(file => ({
-      name: file,
-      path: path.join(folderPath, file)
-    }));
+    for (const file of files) {
+      const ext = path.extname(file).toLowerCase();
+      if (videoExtensions.includes(ext)) {
+        const filePath = path.join(folderPath, file);
+        try {
+          const stats = fs.statSync(filePath);
+          videoFiles.push({
+            name: file,
+            path: filePath,
+            size: stats.size,
+            modified: stats.mtime
+          });
+        } catch (error) {
+          // If we can't get stats, still add the file without size info
+          videoFiles.push({
+            name: file,
+            path: filePath,
+            size: 0,
+            modified: new Date()
+          });
+        }
+      }
+    }
+    
+    return videoFiles;
   } catch (error) {
     console.error('Error reading directory:', error);
     return [];
   }
+});
+
+// Handler para salvar progresso de vídeo
+ipcMain.handle('save-video-progress', async (event, videoId, currentTime, duration) => {
+  // Esta funcionalidade será implementada com localStorage no frontend
+  return { success: true };
+});
+
+// Handler para obter progresso de vídeo
+ipcMain.handle('get-video-progress', async (event, videoId) => {
+  // Esta funcionalidade será implementada com localStorage no frontend
+  return { currentTime: 0, duration: 0 };
 });

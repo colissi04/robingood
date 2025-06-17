@@ -13,7 +13,8 @@
   "author": "Rodrigo Colissi",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^36.4.0"
+    "electron": "^36.4.0",
+    "electron-builder": "^25.1.8"
   },
   "build": {
     "appId": "com.rodrigocolissi.robingood",
@@ -23,21 +24,19 @@
     },
     "files": [
       "main.js",
+      "preload.js",
       "src/**/*",
       "assets/**/*",
       "node_modules/**/*"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": "nsis"
     },
     "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
+      "target": "dmg"
     },
     "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png"
+      "target": "AppImage"
     }
   }
 }

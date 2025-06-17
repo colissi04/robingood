@@ -64,10 +64,13 @@ class NavigationManager {
     }
 
     navigateToCourse(courseId) {
-        // This will be implemented in Phase 4 when we add course detail view
-        console.log('Navigate to course:', courseId);
-        // For now, just show a placeholder
-        this.showNotification('Course detail view coming soon!', 'info');
+        // Navigate to course details using the main app
+        if (window.app && typeof window.app.openCourse === 'function') {
+            window.app.openCourse(courseId);
+        } else {
+            console.log('Navigate to course:', courseId);
+            this.showNotification('App not ready', 'error');
+        }
     }
 
     goBack() {
