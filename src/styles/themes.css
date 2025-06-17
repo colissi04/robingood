@@ -1,0 +1,114 @@
+/* ===== THEME VARIABLES ===== */
+
+/* Dark Theme (Default) */
+[data-theme="dark"] {
+  /* Background Colors */
+  --bg-primary: #18181b;      /* zinc-900 */
+  --bg-secondary: #27272a;    /* zinc-800 */
+  --bg-tertiary: #3f3f46;     /* zinc-700 */
+  --bg-quaternary: #52525b;   /* zinc-600 */
+  --bg-hover: #404040;        /* zinc-700 hover */
+  --bg-active: #525252;       /* zinc-600 active */
+  
+  /* Text Colors */
+  --text-primary: #fafafa;    /* zinc-50 */
+  --text-secondary: #e4e4e7;  /* zinc-200 */
+  --text-tertiary: #a1a1aa;   /* zinc-400 */
+  --text-muted: #71717a;      /* zinc-500 */
+  
+  /* Border Colors */
+  --border-primary: #3f3f46;  /* zinc-700 */
+  --border-secondary: #52525b; /* zinc-600 */
+  --border-hover: #71717a;    /* zinc-500 */
+  
+  /* Accent Colors */
+  --accent-primary: #3b82f6;  /* blue-500 */
+  --accent-hover: #2563eb;    /* blue-600 */
+  --accent-light: #1e40af;    /* blue-700 */
+  
+  /* Status Colors */
+  --success: #10b981;         /* emerald-500 */
+  --warning: #f59e0b;         /* amber-500 */
+  --error: #ef4444;           /* red-500 */
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* Scrollbar */
+  --scrollbar-track: #27272a;
+  --scrollbar-thumb: #52525b;
+  --scrollbar-thumb-hover: #71717a;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  /* Background Colors */
+  --bg-primary: #ffffff;      /* white */
+  --bg-secondary: #f4f4f5;    /* zinc-100 */
+  --bg-tertiary: #e4e4e7;     /* zinc-200 */
+  --bg-quaternary: #d4d4d8;   /* zinc-300 */
+  --bg-hover: #f1f5f9;        /* slate-100 hover */
+  --bg-active: #e2e8f0;       /* slate-200 active */
+  
+  /* Text Colors */
+  --text-primary: #18181b;    /* zinc-900 */
+  --text-secondary: #27272a;  /* zinc-800 */
+  --text-tertiary: #52525b;   /* zinc-600 */
+  --text-muted: #71717a;      /* zinc-500 */
+  
+  /* Border Colors */
+  --border-primary: #e4e4e7;  /* zinc-200 */
+  --border-secondary: #d4d4d8; /* zinc-300 */
+  --border-hover: #a1a1aa;    /* zinc-400 */
+  
+  /* Accent Colors */
+  --accent-primary: #3b82f6;  /* blue-500 */
+  --accent-hover: #2563eb;    /* blue-600 */
+  --accent-light: #1d4ed8;    /* blue-700 */
+  
+  /* Status Colors */
+  --success: #059669;         /* emerald-600 */
+  --warning: #d97706;         /* amber-600 */
+  --error: #dc2626;           /* red-600 */
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* Scrollbar */
+  --scrollbar-track: #f4f4f5;
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-thumb-hover: #a1a1aa;
+}
+
+/* ===== THEME TRANSITIONS ===== */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+} 

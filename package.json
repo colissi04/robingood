@@ -1,0 +1,43 @@
+{
+  "name": "Robingood",
+  "version": "1.0.0",
+  "description": "A free application for you to organize your courses and video classes.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never",
+    "pack": "electron-builder --dir"
+  },
+  "author": "Rodrigo Colissi",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^36.4.0"
+  },
+  "build": {
+    "appId": "com.rodrigocolissi.robingood",
+    "productName": "Robingood",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  }
+}
