@@ -3,7 +3,7 @@
   
   # Robingood
   
-  **Uma aplicação gratuita para organizar seus cursos e aulas em vídeo**
+  **O Robingood é um programa gratuito de código aberto criado para organizar seus cursos e aulas em vídeo. O Robingood é escrito em Node.js (Electron e React).**
   
   ![Robingood Preview](assets/app-preview.png)
   
@@ -64,6 +64,13 @@
 1. Baixe o arquivo `Robingood.exe`
 2. Execute o arquivo (não requer instalação)
 3. Comece a organizar seus cursos!
+
+### Download do Programa
+1. Faça o download do código
+2. Abra o terminal
+3. Rode "yarn" ou "npm install"
+4. Execute o comando "yarn start"
+5. Comece a organizar seus cursos!
 
 ## **Como Usar**
 
