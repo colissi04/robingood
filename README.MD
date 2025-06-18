@@ -99,7 +99,9 @@
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
----
+## 🤝 **Contribuindo**
+
+Quer contribuir com o Robingood? Leia nosso [Guia de Contribuição](CONTRIBUTING.md) para saber como começar!
 
 <div align="center">
   
