@@ -54,7 +54,9 @@ class RobingoodApp {
         // Store the data temporarily in the app instance
         this.tempCourseData = {
             folderPath: folderPath,
-            videoFiles: sortedFiles
+            videoFiles: sortedFiles,
+            logo: null,
+            cover: null
         };
         
         // Create modal dialog for course naming
@@ -79,6 +81,38 @@ class RobingoodApp {
                     <div class="form-group">
                         <label for="course-description">Descrição (opcional)</label>
                         <textarea id="course-description" placeholder="Adicione uma descrição para o curso" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Logo do Curso</label>
+                        <div class="image-selection">
+                            <div class="image-upload">
+                                <div class="image-preview" id="logo-preview" onclick="app.selectImage('logo')">
+                                    <div class="image-preview-placeholder">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                        </svg>
+                                        <div>Clique para selecionar</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Imagem de Capa</label>
+                        <div class="image-selection">
+                            <div class="image-upload">
+                                <div class="image-preview" id="cover-preview" onclick="app.selectImage('cover')" style="height: 60px;">
+                                    <div class="image-preview-placeholder">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3V5Z"/>
+                                        </svg>
+                                        <div>Clique para selecionar</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -133,6 +167,61 @@ class RobingoodApp {
         }, 100);
     }
 
+    async selectImage(type) {
+        try {
+            // Try to use Electron's dialog first
+            if (window.electronAPI?.selectImage) {
+                const result = await window.electronAPI.selectImage();
+                
+                if (result && !result.canceled && result.filePaths.length > 0) {
+                    const imagePath = result.filePaths[0];
+                    
+                    // Store the image path
+                    this.tempCourseData[type] = imagePath;
+                    
+                    // Update preview
+                    const preview = document.getElementById(`${type}-preview`);
+                    if (preview) {
+                        preview.innerHTML = `<img src="file://${imagePath}" alt="${type} preview">`;
+                    }
+                }
+            } else {
+                // Fallback to web file input
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.style.display = 'none';
+                
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const imageDataUrl = event.target.result;
+                            
+                            // Store the image data
+                            this.tempCourseData[type] = imageDataUrl;
+                            
+                            // Update preview
+                            const preview = document.getElementById(`${type}-preview`);
+                            if (preview) {
+                                preview.innerHTML = `<img src="${imageDataUrl}" alt="${type} preview">`;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    document.body.removeChild(input);
+                };
+                
+                document.body.appendChild(input);
+                input.click();
+            }
+        } catch (error) {
+            console.error('Error selecting image:', error);
+            this.showNotification('Erro ao selecionar imagem', 'error');
+        }
+    }
+
     confirmAddCourse(modal) {
         const courseName = modal.querySelector('#course-name').value.trim();
         const courseDescription = modal.querySelector('#course-description').value.trim();
@@ -149,13 +238,15 @@ class RobingoodApp {
         }
 
         // Get the temporary data
-        const { folderPath, videoFiles } = this.tempCourseData;
+        const { folderPath, videoFiles, logo, cover } = this.tempCourseData;
         
         const course = {
             id: Date.now().toString(),
             name: courseName,
             description: courseDescription,
             path: folderPath,
+            logo: logo,
+            cover: cover,
             videos: videoFiles.map((file, index) => ({
                 id: `${Date.now()}_${index}`,
                 name: file.name,
@@ -265,9 +356,13 @@ class RobingoodApp {
         coursesList.innerHTML = this.courses.map(course => `
             <div class="course-item" data-course-id="${course.id}" onclick="app.openCourse('${course.id}')">
                 <div class="course-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                    </svg>
+                    ${course.logo ? `
+                        <img src="${course.logo.startsWith('data:') ? course.logo : 'file://' + course.logo}" alt="Logo do curso" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                    ` : `
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                    `}
                 </div>
                 <div class="course-info">
                     <div class="course-name">${course.name}</div>
@@ -295,12 +390,21 @@ class RobingoodApp {
         }
 
         coursesGrid.innerHTML = this.courses.map(course => `
-            <div class="course-card" data-course-id="${course.id}" onclick="app.openCourse('${course.id}')">
+            <div class="course-card ${course.cover ? 'has-cover' : ''}" data-course-id="${course.id}" onclick="app.openCourse('${course.id}')">
+                ${course.cover ? `
+                    <div class="course-card-cover">
+                        <img src="${course.cover.startsWith('data:') ? course.cover : 'file://' + course.cover}" alt="Capa do curso">
+                    </div>
+                ` : ''}
                 <div class="course-card-header">
                     <div class="course-card-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                        </svg>
+                        ${course.logo ? `
+                            <img src="${course.logo.startsWith('data:') ? course.logo : 'file://' + course.logo}" alt="Logo do curso">
+                        ` : `
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        `}
                     </div>
                     <div class="course-card-info">
                         <div class="course-card-title">${course.name}</div>
@@ -825,6 +929,7 @@ if (typeof require !== 'undefined') {
     
     window.electronAPI = {
         selectFolder: () => ipcRenderer.invoke('select-folder'),
-        getVideoFiles: (folderPath) => ipcRenderer.invoke('get-video-files', folderPath)
+        getVideoFiles: (folderPath) => ipcRenderer.invoke('get-video-files', folderPath),
+        selectImage: () => ipcRenderer.invoke('select-image')
     };
 } 

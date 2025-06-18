@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robingood - Course Organizer</title>
+    <title>Robingood</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/themes.css">
 </head>
@@ -27,19 +27,19 @@
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                     </svg>
-                    <span>Home</span>
+                    <span>Início</span>
                 </a>
                 <a href="#" class="nav-item" data-section="settings">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
                     </svg>
-                    <span>Settings</span>
+                    <span>Configurações</span>
                 </a>
             </nav>
 
             <!-- Library Section -->
             <div class="library-section">
-                <h3 class="library-title">MY LIBRARY</h3>
+                <h3 class="library-title">BIBLIOTECA</h3>
                 <div class="search-container">
                     <input type="text" class="search-input" placeholder="Filter library" id="library-search">
                     <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -57,7 +57,7 @@
             <!-- Header -->
             <header class="main-header">
                 <div class="header-left">
-                    <h1 class="page-title" id="page-title">Home</h1>
+                    <h1 class="page-title" id="page-title">Início</h1>
                 </div>
                 <div class="header-right">
                     <button class="theme-toggle" id="theme-toggle">
@@ -73,12 +73,12 @@
                 <!-- Home Section -->
                 <section class="home-section" id="home-section">
                     <div class="section-header">
-                        <h2>My Library</h2>
+                        <h2>Biblioteca</h2>
                         <button class="add-course-btn" id="add-course-btn">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
-                            <span>Add Course</span>
+                            <span>Adicionar</span>
                         </button>
                     </div>
                     <div class="courses-grid" id="courses-grid">
@@ -87,8 +87,8 @@
                             <svg class="empty-icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                             </svg>
-                            <h3>No courses yet</h3>
-                            <p>Start by adding your first course</p>
+                            <h3>Ainda não há cursos</h3>
+                            <p>Comece adicionando seu primeiro curso</p>
                         </div>
                     </div>
                 </section>
@@ -96,14 +96,14 @@
                 <!-- Settings Section -->
                 <section class="settings-section" id="settings-section" style="display: none;">
                     <div class="settings-content">
-                        <h2>Settings</h2>
+                        <h2>Configurações</h2>
                         <div class="settings-group">
-                            <h3>Appearance</h3>
+                            <h3>Aparência</h3>
                             <div class="setting-item">
-                                <label for="theme-select">Theme</label>
+                                <label for="theme-select">Tema</label>
                                 <select id="theme-select">
-                                    <option value="dark">Dark</option>
-                                    <option value="light">Light</option>
+                                    <option value="dark">Escuro</option>
+                                    <option value="light">Claro</option>
                                 </select>
                             </div>
                         </div>

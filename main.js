@@ -16,7 +16,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     titleBarStyle: 'default',
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    icon: path.join(__dirname, 'assets', 'icon.jpeg'),
     show: false,
     autoHideMenuBar: true,
     menuBarVisible: false
@@ -53,7 +53,6 @@ app.on('activate', () => {
   }
 });
 
-// IPC handlers para funcionalidades futuras
 ipcMain.handle('select-folder', async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory']

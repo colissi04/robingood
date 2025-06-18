@@ -207,6 +207,7 @@ a {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .course-info {
@@ -402,6 +403,8 @@ a {
   display: flex;
   flex-direction: column;
   height: 200px;
+  position: relative;
+  overflow: hidden;
 }
 
 .course-card:hover {
@@ -415,6 +418,46 @@ a {
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.course-card-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.course-card-cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.course-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.3s ease;
+}
+
+.course-card:hover .course-card-cover img {
+  filter: blur(3px);
+}
+
+.course-card:hover .course-card-cover::before {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.8) 100%);
 }
 
 .course-card-icon {
@@ -426,11 +469,44 @@ a {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+  border: 2px solid var(--bg-secondary);
+  overflow: hidden;
+}
+
+.course-card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .course-card-info {
   flex: 1;
   min-width: 0;
+  position: relative;
+  z-index: 3;
+}
+
+.course-card.has-cover .course-card-info,
+.course-card.has-cover .course-card-body {
+  position: relative;
+  z-index: 3;
+}
+
+.course-card.has-cover .course-card-title {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.course-card.has-cover .course-card-subtitle {
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.course-card.has-cover .course-stats {
+  color: rgba(255,255,255,0.8);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 .course-card-title {
@@ -453,6 +529,8 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
+  z-index: 2;
 }
 
 .course-stats {
@@ -567,7 +645,7 @@ a {
   border: 1px solid var(--border-primary);
   border-radius: 12px;
   width: 90%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: 90vh;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
@@ -640,7 +718,8 @@ a {
   margin-bottom: 8px;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea {
   width: 100%;
   padding: 12px 16px;
   background-color: var(--bg-tertiary);
@@ -648,15 +727,105 @@ a {
   border-radius: 8px;
   color: var(--text-primary);
   font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--accent-primary);
 }
 
-.form-group input::placeholder {
+.form-group input::placeholder,
+.form-group textarea::placeholder {
   color: var(--text-muted);
+}
+
+/* Image Selection */
+.image-selection {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.image-upload {
+  flex: 1;
+}
+
+.image-preview {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed var(--border-primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.image-preview:hover {
+  border-color: var(--accent-primary);
+  background-color: var(--bg-hover);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview-placeholder {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 11px;
+}
+
+.image-preview-placeholder svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.image-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.image-upload-btn:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.image-upload-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.folder-path {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: monospace;
+  word-break: break-all;
 }
 
 /* File List */

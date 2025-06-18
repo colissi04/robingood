@@ -134,9 +134,9 @@ class NavigationManager {
         if (!pageTitle) return;
 
         const titles = {
-            'home': 'Home',
-            'settings': 'Settings',
-            'course': 'Course Details'
+            'home': 'Início',
+            'settings': 'Configurações',
+            'course': 'Detalhes do curso'
         };
 
         pageTitle.textContent = titles[section] || 'Robingood';
