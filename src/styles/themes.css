@@ -3,49 +3,49 @@
 /* Dark Theme (Default) */
 [data-theme="dark"] {
   /* Background Colors */
-  --bg-primary: #18181b;      /* zinc-900 */
-  --bg-secondary: #27272a;    /* zinc-800 */
-  --bg-tertiary: #3f3f46;     /* zinc-700 */
-  --bg-quaternary: #52525b;   /* zinc-600 */
-  --bg-hover: #404040;        /* zinc-700 hover */
-  --bg-active: #525252;       /* zinc-600 active */
+  --bg-primary: #09090b;        /* zinc-950 */
+  --bg-secondary: #18181b;      /* zinc-900 */
+  --bg-tertiary: #27272a;       /* zinc-800 */
+  --bg-quaternary: #3f3f46;     /* zinc-700 */
+  --bg-hover: #27272a;          /* zinc-800 hover */
+  --bg-active: #3f3f46;         /* zinc-700 active */
   
   /* New Component Specific Variables */
-  --surface-color: #27272a;    /* zinc-800 */
-  --surface-secondary: #3f3f46; /* zinc-700 */
-  --header-bg: #18181b;        /* zinc-900 */
-  --hover-bg: #404040;         /* zinc-700 hover */
+  --surface-color: #18181b;      /* zinc-900 */
+  --surface-secondary: #27272a;  /* zinc-800 */
+  --header-bg: #09090b;          /* zinc-950 */
+  --hover-bg: #27272a;           /* zinc-800 hover */
   
   /* Text Colors */
-  --text-primary: #fafafa;    /* zinc-50 */
-  --text-secondary: #e4e4e7;  /* zinc-200 */
-  --text-tertiary: #a1a1aa;   /* zinc-400 */
-  --text-muted: #71717a;      /* zinc-500 */
-  --text-color: #fafafa;      /* zinc-50 */
+  --text-primary: #fafafa;      /* zinc-50 */
+  --text-secondary: #e4e4e7;    /* zinc-200 */
+  --text-tertiary: #a1a1aa;     /* zinc-400 */
+  --text-muted: #71717a;        /* zinc-500 */
+  --text-color: #fafafa;        /* zinc-50 */
   
   /* Border Colors */
-  --border-primary: #3f3f46;  /* zinc-700 */
-  --border-secondary: #52525b; /* zinc-600 */
-  --border-hover: #71717a;    /* zinc-500 */
-  --border-color: #3f3f46;    /* zinc-700 */
+  --border-primary: #27272a;    /* zinc-800 */
+  --border-secondary: #3f3f46;  /* zinc-700 */
+  --border-hover: #52525b;      /* zinc-600 */
+  --border-color: #27272a;      /* zinc-800 */
   
   /* Accent Colors */
-  --accent-primary: #3b82f6;  /* blue-500 */
-  --accent-hover: #2563eb;    /* blue-600 */
-  --accent-light: #1e40af;    /* blue-700 */
-  --primary-color: #3b82f6;   /* blue-500 */
-  --primary-color-alpha: rgba(59, 130, 246, 0.1); /* blue-500 with alpha */
-  --primary-color-rgb: 59, 130, 246; /* blue-500 RGB values */
+  --accent-primary: #10b981;    /* emerald-500 (verde) */
+  --accent-hover: #059669;      /* emerald-600 */
+  --accent-light: #047857;      /* emerald-700 */
+  --primary-color: #10b981;     /* emerald-500 (verde) */
+  --primary-color-alpha: rgba(16, 185, 129, 0.1); /* emerald-500 with alpha */
+  --primary-color-rgb: 16, 185, 129; /* emerald-500 RGB values */
   
   /* Status Colors */
-  --success: #10b981;         /* emerald-500 */
-  --warning: #f59e0b;         /* amber-500 */
-  --error: #ef4444;           /* red-500 */
-  --success-color: #10b981;   /* emerald-500 */
+  --success: #10b981;           /* emerald-500 */
+  --warning: #f59e0b;           /* amber-500 (mantém laranja) */
+  --error: #ef4444;             /* red-500 */
+  --success-color: #10b981;     /* emerald-500 */
   --success-color-rgb: 16, 185, 129; /* emerald-500 RGB values */
-  --warning-color: #f59e0b;   /* amber-500 */
+  --warning-color: #f59e0b;     /* amber-500 (mantém laranja) */
   --warning-color-rgb: 245, 158, 11; /* amber-500 RGB values */
-  --error-color: #ef4444;     /* red-500 */
+  --error-color: #ef4444;       /* red-500 */
   
   /* Shadow */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -53,9 +53,9 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   
   /* Scrollbar */
-  --scrollbar-track: #27272a;
-  --scrollbar-thumb: #52525b;
-  --scrollbar-thumb-hover: #71717a;
+  --scrollbar-track: #18181b;
+  --scrollbar-thumb: #3f3f46;
+  --scrollbar-thumb-hover: #52525b;
 }
 
 /* Light Theme */
