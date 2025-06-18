@@ -1103,31 +1103,8 @@ a {
 }
 
 .course-header {
-    margin-bottom: 2rem;
-}
-
-.back-button {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.back-button:hover {
-    background: var(--hover-bg);
-    color: var(--primary-color);
-}
-
-.back-button svg {
-    width: 20px;
-    height: 20px;
+    padding: 0 2rem 1rem 2rem;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .course-info-header h1 {
@@ -1629,4 +1606,135 @@ a {
     border-radius: 4px;
     position: relative;
     flex-shrink: 0;
+}
+
+/* Course Header Actions */
+.course-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.back-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.delete-course-button {
+  background: transparent;
+  border: 1px solid var(--error);
+  color: var(--error);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.delete-course-button:hover {
+  background: var(--error);
+  color: white;
+}
+
+.delete-course-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Delete Confirmation Modal */
+.delete-confirmation {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.warning-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(var(--warning-color-rgb), 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.warning-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--warning);
+}
+
+.delete-message {
+  flex: 1;
+}
+
+.delete-message h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.delete-message p {
+  margin: 0 0 8px 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.delete-message p:last-child {
+  margin-bottom: 0;
+}
+
+.warning-text {
+  font-size: 13px;
+  color: var(--text-muted) !important;
+  background: var(--bg-tertiary);
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid var(--warning);
+}
+
+/* Danger Button */
+.btn-danger {
+  padding: 10px 20px;
+  background-color: var(--error);
+  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
 } 

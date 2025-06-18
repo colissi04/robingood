@@ -470,12 +470,20 @@ class RobingoodApp {
         courseSection.innerHTML = `
             <div class="course-details-container">
                 <div class="course-header">
-                    <button class="back-button" onclick="app.showLibrary()">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
-                        </svg>
-                        Voltar à Biblioteca
-                    </button>
+                    <div class="course-header-actions">
+                        <button class="back-button" onclick="app.showLibrary()">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+                            </svg>
+                            Voltar à Biblioteca
+                        </button>
+                        <button class="delete-course-button" onclick="app.deleteCourse('${course.id}')" title="Deletar curso">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                            </svg>
+                            Deletar Curso
+                        </button>
+                    </div>
                     <div class="course-info-header">
                         <h1>${course.name}</h1>
                         ${course.description ? `<p class="course-description">${course.description}</p>` : ''}
@@ -912,6 +920,90 @@ class RobingoodApp {
                 notification.remove();
             }
         }, 5000);
+    }
+
+    deleteCourse(courseId) {
+        const course = this.courses.find(c => c.id === courseId);
+        if (!course) {
+            this.showNotification('Curso não encontrado', 'error');
+            return;
+        }
+
+        // Show confirmation dialog
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Deletar Curso</h3>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="delete-confirmation">
+                        <div class="warning-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                            </svg>
+                        </div>
+                        <div class="delete-message">
+                            <h4>Tem certeza que deseja deletar o curso?</h4>
+                            <p><strong>"${course.name}"</strong></p>
+                            <p class="warning-text">Esta ação não pode ser desfeita. O curso será removido permanentemente da sua biblioteca, mas os arquivos de vídeo não serão excluídos do seu computador.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
+                    <button class="btn-danger" id="confirm-delete-course">Deletar Curso</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Add event listener for confirmation
+        const confirmButton = modal.querySelector('#confirm-delete-course');
+        confirmButton.addEventListener('click', () => {
+            this.confirmDeleteCourse(courseId, modal);
+        });
+    }
+
+    confirmDeleteCourse(courseId, modal) {
+        // Remove course from array
+        this.courses = this.courses.filter(c => c.id !== courseId);
+        
+        // Clean up video progress data
+        const course = this.courses.find(c => c.id === courseId);
+        if (course) {
+            course.videos.forEach(video => {
+                const progressKey = `video_progress_${video.id}`;
+                localStorage.removeItem(progressKey);
+            });
+        }
+        
+        // Save changes
+        this.saveCourses();
+        
+        // Update UI
+        this.updateUI();
+        
+        // Close modal
+        modal.remove();
+        
+        // Go back to library
+        this.showLibrary();
+        
+        // Show success notification
+        this.showNotification('Curso deletado com sucesso', 'success');
+        
+        // Update global variable
+        if (window.courses !== undefined) {
+            window.courses = this.courses;
+        }
     }
 }
 
