@@ -983,12 +983,9 @@ a {
 }
 
 .video-player-container {
-    width: 95%;
-    height: 95%;
-    max-width: 1400px;
-    max-height: 900px;
+    width: 100%;
+    height: 100%;
     background: var(--surface-color);
-    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1002,6 +999,7 @@ a {
     padding: 1rem 1.5rem;
     background: var(--header-bg);
     border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
 }
 
 .close-player {
@@ -1490,11 +1488,15 @@ a {
     .video-player-container {
         width: 100%;
         height: 100%;
-        border-radius: 0;
     }
     
     .video-playlist {
-        display: none;
+        width: 100%;
+        right: -100%;
+    }
+    
+    .playlist-toggle {
+        opacity: 1;
     }
     
     .videos-grid {
@@ -1543,21 +1545,58 @@ a {
 }
 
 .video-playlist {
-    width: 300px;
+    position: absolute;
+    top: 0;
+    right: -350px;
+    width: 350px;
+    height: 100%;
     background: var(--surface-secondary);
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.video-playlist.show {
+    right: 0;
+}
+
+.playlist-toggle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: none;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 1001;
+}
+
+.video-wrapper:hover .playlist-toggle {
+    opacity: 1;
 }
 
 .video-playlist h4 {
-    margin: 0;
     padding: 1rem 1.5rem;
+    margin: 0;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
     font-size: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--header-bg);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .playlist-videos {
@@ -1776,4 +1815,14 @@ a {
 .btn-danger:hover {
   background-color: #dc2626;
   transform: translateY(-1px);
+}
+
+.playlist-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.playlist-toggle:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.05);
 } 

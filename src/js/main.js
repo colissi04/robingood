@@ -712,6 +712,12 @@ class RobingoodApp {
                         Seu navegador não suporta o elemento de vídeo.
                     </video>
                     
+                    <button class="playlist-toggle" onclick="app.togglePlaylist()" title="Mostrar/Esconder Playlist">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
+                        </svg>
+                    </button>
+                    
                     <div class="video-navigation">
                         <button class="nav-btn prev-video" onclick="app.playPreviousVideo('${course.id}', '${video.id}')" title="Vídeo Anterior" ${course.videos.findIndex(v => v.id === video.id) === 0 ? 'disabled' : ''}>
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -727,7 +733,7 @@ class RobingoodApp {
                     </div>
                 </div>
                 
-                <div class="video-playlist">
+                <div class="video-playlist" id="video-playlist">
                     <h4>Playlist do Curso</h4>
                     <div class="playlist-videos">
                         ${course.videos.map((v, index) => `
@@ -766,8 +772,27 @@ class RobingoodApp {
                 playerModal.remove();
                 document.removeEventListener('keydown', handleEscape);
             }
+            // Toggle playlist with 'P' key
+            if (e.key === 'p' || e.key === 'P') {
+                this.togglePlaylist();
+            }
         };
         document.addEventListener('keydown', handleEscape);
+        
+        // Auto-hide playlist on mobile
+        if (window.innerWidth <= 768) {
+            const playlist = playerModal.querySelector('.video-playlist');
+            if (playlist) {
+                playlist.classList.remove('show');
+            }
+        }
+    }
+
+    togglePlaylist() {
+        const playlist = document.getElementById('video-playlist');
+        if (playlist) {
+            playlist.classList.toggle('show');
+        }
     }
 
     onVideoLoadedMetadata(event) {
