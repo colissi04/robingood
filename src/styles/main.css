@@ -358,7 +358,7 @@ a {
 .courses-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 12px;
   height: calc(100% - 80px);
 }
 
@@ -617,7 +617,7 @@ a {
   
   .courses-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+    gap: 10px;
   }
   
   .content-area {
