@@ -3,15 +3,13 @@
   
   # Robingood
   
-  ---
-  
   **Uma aplicação gratuita para organizar seus cursos e aulas em vídeo**
   
   ![Robingood Preview](assets/app-preview.png)
   
 </div>
 
-## Funcionalidades
+## **Funcionalidades**
 
 ### **Gerenciamento de Cursos**
 - Adicione cursos selecionando pastas com vídeos
