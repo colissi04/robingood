@@ -254,7 +254,8 @@ class RobingoodApp {
                 watched: false,
                 currentTime: 0,
                 duration: 0,
-                order: index + 1
+                order: index + 1,
+                thumbnail: null // Initialize thumbnail as null
             })),
             createdAt: new Date().toISOString(),
             lastAccessed: new Date().toISOString(),
@@ -276,6 +277,11 @@ class RobingoodApp {
         if (window.courses !== undefined) {
             window.courses = this.courses;
         }
+
+        // Generate thumbnails in the background
+        setTimeout(() => {
+            this.generateCourseThumbnails(course);
+        }, 1000);
     }
 
     getFolderName(folderPath) {
@@ -320,6 +326,17 @@ class RobingoodApp {
         try {
             const saved = localStorage.getItem('robingood-courses');
             this.courses = saved ? JSON.parse(saved) : [];
+            
+            // Load thumbnails for all videos
+            this.courses.forEach(course => {
+                course.videos.forEach(video => {
+                    const thumbnailKey = `video_thumbnail_${video.id}`;
+                    const cachedThumbnail = localStorage.getItem(thumbnailKey);
+                    if (cachedThumbnail) {
+                        video.thumbnail = cachedThumbnail;
+                    }
+                });
+            });
             
             // Update global variable
             if (window.courses !== undefined) {
@@ -528,11 +545,15 @@ class RobingoodApp {
                         ${course.videos.map((video, index) => `
                             <div class="video-card ${this.getVideoStatusClass(video)}" onclick="app.playVideo('${course.id}', '${video.id}')">
                                 <div class="video-thumbnail">
-                                    <div class="thumbnail-placeholder">
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
-                                        </svg>
-                                    </div>
+                                    ${video.thumbnail ? `
+                                        <img src="${video.thumbnail}" alt="Thumbnail do vídeo" class="video-thumbnail-img">
+                                    ` : `
+                                        <div class="thumbnail-placeholder">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                                            </svg>
+                                        </div>
+                                    `}
                                     
                                     ${video.watched ? `
                                         <div class="completion-overlay">
@@ -584,6 +605,9 @@ class RobingoodApp {
 
         // Setup view toggle functionality
         this.setupViewToggle();
+
+        // Generate thumbnails asynchronously
+        this.generateCourseThumbnails(course);
     }
 
     getVideoStatusClass(video) {
@@ -1003,6 +1027,140 @@ class RobingoodApp {
         // Update global variable
         if (window.courses !== undefined) {
             window.courses = this.courses;
+        }
+    }
+
+    async generateVideoThumbnail(video) {
+        return new Promise((resolve) => {
+            // Create a temporary video element
+            const tempVideo = document.createElement('video');
+            tempVideo.crossOrigin = 'anonymous';
+            tempVideo.muted = true;
+            tempVideo.style.display = 'none';
+            
+            // Add to DOM temporarily
+            document.body.appendChild(tempVideo);
+            
+            tempVideo.onloadeddata = () => {
+                // Seek to 10% of the video duration for a better thumbnail
+                const seekTime = tempVideo.duration * 0.1;
+                tempVideo.currentTime = seekTime;
+            };
+            
+            tempVideo.onseeked = () => {
+                try {
+                    // Create canvas to capture frame
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Set canvas dimensions
+                    canvas.width = 280;
+                    canvas.height = 160;
+                    
+                    // Draw video frame to canvas
+                    ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                    
+                    // Convert to base64 data URL
+                    const thumbnailData = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // Store thumbnail
+                    video.thumbnail = thumbnailData;
+                    
+                    // Save to localStorage for persistence
+                    const thumbnailKey = `video_thumbnail_${video.id}`;
+                    localStorage.setItem(thumbnailKey, thumbnailData);
+                    
+                    // Clean up
+                    document.body.removeChild(tempVideo);
+                    resolve(thumbnailData);
+                } catch (error) {
+                    console.error('Error generating thumbnail:', error);
+                    document.body.removeChild(tempVideo);
+                    resolve(null);
+                }
+            };
+            
+            tempVideo.onerror = () => {
+                console.error('Error loading video for thumbnail generation');
+                document.body.removeChild(tempVideo);
+                resolve(null);
+            };
+            
+            // Load the video
+            tempVideo.src = `file://${video.path}`;
+            tempVideo.load();
+        });
+    }
+
+    async loadVideoThumbnail(video) {
+        // Check if thumbnail is already loaded
+        if (video.thumbnail) {
+            return video.thumbnail;
+        }
+        
+        // Check localStorage for cached thumbnail
+        const thumbnailKey = `video_thumbnail_${video.id}`;
+        const cachedThumbnail = localStorage.getItem(thumbnailKey);
+        
+        if (cachedThumbnail) {
+            video.thumbnail = cachedThumbnail;
+            return cachedThumbnail;
+        }
+        
+        // Generate new thumbnail
+        return await this.generateVideoThumbnail(video);
+    }
+
+    async generateCourseThumbnails(course) {
+        if (!course || !course.videos || course.videos.length === 0) return;
+        
+        let generatedCount = 0;
+        const totalVideos = course.videos.length;
+
+        // Generate thumbnails one by one to avoid overwhelming the system
+        for (const video of course.videos) {
+            try {
+                await this.loadVideoThumbnail(video);
+                generatedCount++;
+                
+                // Update the specific video card if we're viewing this course
+                if (document.getElementById('course-details-section')?.style.display !== 'none') {
+                    this.updateVideoCard(course, video);
+                }
+                
+            } catch (error) {
+                console.error('Error generating thumbnail for video:', video.name, error);
+            }
+            
+            // Small delay to prevent blocking the UI
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        // Save the course with updated thumbnails
+        this.saveCourses();
+    }
+
+    updateVideoCard(course, video) {
+        const videoCards = document.querySelectorAll('.video-card');
+        const videoIndex = course.videos.findIndex(v => v.id === video.id);
+        
+        if (videoIndex >= 0 && videoCards[videoIndex]) {
+            const thumbnailContainer = videoCards[videoIndex].querySelector('.video-thumbnail');
+            if (thumbnailContainer && video.thumbnail) {
+                // Replace placeholder with actual thumbnail
+                const existingImg = thumbnailContainer.querySelector('.video-thumbnail-img');
+                const placeholder = thumbnailContainer.querySelector('.thumbnail-placeholder');
+                
+                if (!existingImg && placeholder && video.thumbnail) {
+                    const img = document.createElement('img');
+                    img.src = video.thumbnail;
+                    img.alt = 'Thumbnail do vídeo';
+                    img.className = 'video-thumbnail-img';
+                    
+                    // Replace placeholder with image
+                    thumbnailContainer.replaceChild(img, placeholder);
+                }
+            }
         }
     }
 }
