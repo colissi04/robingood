@@ -34,7 +34,7 @@ function createWindow() {
   });
 
   // Abrir DevTools em desenvolvimento
-  if (process.env.NODE_ENV === 'development') {
+  if (process.argv.includes('--dev')) {
     mainWindow.webContents.openDevTools();
   }
 }
