@@ -19,6 +19,8 @@
   "build": {
     "appId": "com.rodrigocolissi.robingood",
     "productName": "Robingood",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "copyright": "Copyright © 2025 Rodrigo Colissi",
     "directories": {
       "output": "dist"
     },
@@ -30,13 +32,18 @@
       "node_modules/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": "portable",
+      "icon": "assets/robingood.logo.png",
+      "artifactName": "Robingood-${version}-portable.exe",
+      "requestedExecutionLevel": "asInvoker"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "assets/robingood.logo.png"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "assets/robingood.logo.png"
     }
   }
 }
