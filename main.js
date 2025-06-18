@@ -16,7 +16,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     titleBarStyle: 'default',
-    icon: path.join(__dirname, 'assets', 'icon.jpeg'),
+    icon: path.join(__dirname, 'assets', 'robingood.logo.png'),
     show: false,
     autoHideMenuBar: true,
     menuBarVisible: false
