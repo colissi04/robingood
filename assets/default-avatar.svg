@@ -1,5 +1,11 @@
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="20" cy="20" r="20" fill="#52525b"/>
-  <path d="M20 12C16.6863 12 14 14.6863 14 18C14 21.3137 16.6863 24 20 24C23.3137 24 26 21.3137 26 18C26 14.6863 23.3137 12 20 12Z" fill="#a1a1aa"/>
-  <path d="M20 26C14.4772 26 10 30.4772 10 36V38C10 39.1046 10.8954 40 12 40H28C29.1046 40 30 39.1046 30 38V36C30 30.4772 25.5228 26 20 26Z" fill="#a1a1aa"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="60" fill="#f59e0b"/>
+  
+  <!-- Head -->
+  <circle cx="60" cy="45" r="20" fill="white"/>
+  
+  <!-- Body -->
+  <ellipse cx="60" cy="85" rx="25" ry="20" fill="white"/>
 </svg> 

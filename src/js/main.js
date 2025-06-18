@@ -10,6 +10,13 @@ class RobingoodApp {
         this.setupEventListeners();
         this.loadCourses();
         this.updateUI();
+        
+        // Initialize profile after a short delay to ensure profileManager is loaded
+        setTimeout(() => {
+            if (window.profileManager) {
+                window.profileManager.updateStatistics();
+            }
+        }, 100);
     }
 
     setupEventListeners() {
@@ -278,6 +285,11 @@ class RobingoodApp {
             window.courses = this.courses;
         }
 
+        // Update profile statistics
+        if (window.profileManager) {
+            window.profileManager.refreshStatistics();
+        }
+
         // Generate thumbnails in the background
         setTimeout(() => {
             this.generateCourseThumbnails(course);
@@ -351,6 +363,11 @@ class RobingoodApp {
     saveCourses() {
         try {
             localStorage.setItem('robingood-courses', JSON.stringify(this.courses));
+            
+            // Update profile statistics when courses are saved
+            if (window.profileManager) {
+                window.profileManager.refreshStatistics();
+            }
         } catch (error) {
             console.error('Error saving courses:', error);
         }
@@ -907,6 +924,11 @@ class RobingoodApp {
             
             // Update sidebar
             this.updateSidebarCourses();
+            
+            // Update profile statistics
+            if (window.profileManager) {
+                window.profileManager.refreshStatistics();
+            }
         }
     }
 
@@ -1052,6 +1074,11 @@ class RobingoodApp {
         // Update global variable
         if (window.courses !== undefined) {
             window.courses = this.courses;
+        }
+        
+        // Update profile statistics
+        if (window.profileManager) {
+            window.profileManager.refreshStatistics();
         }
     }
 

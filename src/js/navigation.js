@@ -135,6 +135,7 @@ class NavigationManager {
 
         const titles = {
             'home': 'Início',
+            'profile': 'Perfil',
             'settings': 'Configurações',
             'course': 'Detalhes do curso'
         };

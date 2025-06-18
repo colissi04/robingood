@@ -29,6 +29,12 @@
                     </svg>
                     <span>Início</span>
                 </a>
+                <a href="#" class="nav-item" data-section="profile">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.46,14.5 12,14.5C10.54,14.5 7.07,15.09 5.64,16.83C4.62,15.5 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.5 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6M12,11A1.5,1.5 0 0,1 10.5,9.5A1.5,1.5 0 0,1 12,8A1.5,1.5 0 0,1 13.5,9.5A1.5,1.5 0 0,1 12,11Z"/>
+                    </svg>
+                    <span>Perfil</span>
+                </a>
                 <a href="#" class="nav-item" data-section="settings">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
@@ -109,6 +115,114 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Profile Section -->
+                <section class="profile-section-content" id="profile-section" style="display: none;">
+                    <div class="profile-content">
+                        <div class="profile-header">
+                            <h2>Meu Perfil</h2>
+                            <p>Gerencie suas informações pessoais e veja suas estatísticas de aprendizado</p>
+                        </div>
+
+                        <div class="profile-main">
+                            <div class="profile-card">
+                                <div class="profile-edit-section">
+                                    <div class="profile-avatar-edit">
+                                        <div class="avatar-container">
+                                            <img id="profile-avatar-edit" src="../assets/default-avatar.svg" alt="Avatar do usuário">
+                                            <button class="avatar-edit-btn" id="edit-avatar-btn" title="Alterar avatar">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M3,17.25V21H6.75L17.81,9.94L14.06,6.19L3,17.25M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04Z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="profile-name-edit">
+                                            <input type="text" id="profile-name-input" placeholder="Seu nome">
+                                            <button class="btn-primary" id="save-profile-btn">Salvar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-stats">
+                                <h3>Estatísticas de Aprendizado</h3>
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="stat-total-courses">0</h4>
+                                            <p>Cursos Totais</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="stat-total-videos">0</h4>
+                                            <p>Vídeos Totais</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="stat-watched-videos">0</h4>
+                                            <p>Vídeos Assistidos</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="stat-completed-courses">0</h4>
+                                            <p>Cursos Concluídos</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="stat-watch-time">0h 0m</h4>
+                                            <p>Tempo Assistido</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="stat-avg-progress">0%</h4>
+                                            <p>Progresso Médio</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
@@ -116,5 +230,6 @@
     <script src="js/main.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/profile.js"></script>
 </body>
 </html> 
